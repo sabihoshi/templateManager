@@ -38,10 +38,10 @@
     const NO_JSON_TEMPLATE_IN_PARAMS = "no_json_template";
     const CONTACT_INFO_CSS = css `
     div.iHasContactInfo {
-        max-width: 30px; 
+        max-width: 30px;
         padding: 1px;
         font-size: 1px; /* these 3 will be overwritten, but oh well */
-        width: max-content; 
+        width: max-content;
         white-space: nowrap;
         overflow: hidden;
         font-weight: bold;
@@ -89,7 +89,7 @@
         margin: 0px;
     }
 
-    .osuplaceNotification.visible { 
+    .osuplaceNotification.visible {
         height: auto;
         opacity: 1;
         padding: 8px;
@@ -885,6 +885,12 @@
                     if (json.templates) {
                         for (let i = 0; i < json.templates.length; i++) {
                             if (this.templates.length < this.templatesToLoad) {
+                                // Check if the url is in reddit, as we need to offset the x and y coordinates to half of the size of the canvas
+                                if (window.location.host.includes("reddit")) {
+                                    json.templates[i].x -= this.selectedCanvas.width / 2;
+                                    json.templates[i].y -= this.selectedCanvas.height / 2;
+                                }
+
                                 let constructor = (a) => new Template(json.templates[i], json.contact || json.contactInfo || lastContact, a, minPriority + this.templates.length);
                                 this.templateConstructors.push(constructor);
                                 let newTemplate = constructor(this.selectedCanvas);

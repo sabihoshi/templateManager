@@ -161,6 +161,12 @@ export class TemplateManager {
                 if (json.templates) {
                     for (let i = 0; i < json.templates.length; i++) {
                         if (this.templates.length < this.templatesToLoad) {
+                            // Check if the url is in reddit, as we need to offset the x and y coordinates to half of the size of the canvas
+                            if (window.location.host.includes("reddit")) {
+                                json.templates[i].x -= this.selectedCanvas.width / 2;
+                                json.templates[i].y -= this.selectedCanvas.height / 2;
+                            }
+
                             let constructor = (a: HTMLCanvasElement) => new Template(json.templates[i], json.contact || json.contactInfo || lastContact, a, minPriority + this.templates.length)
                             this.templateConstructors.push(constructor)
                             let newTemplate = constructor(this.selectedCanvas)
@@ -187,7 +193,7 @@ export class TemplateManager {
 
     setupNotifications(serverUrl: string, isTopLevelTemplate: boolean, doPoll: boolean = false) {
         console.log('attempting to set up notification server ' + serverUrl, doPoll ? "polling" : "websocket");
-        
+
         // check if we're not already connected
         let wsUrl = new URL('/listen', serverUrl)
         wsUrl.protocol = wsUrl.protocol == 'https:' ? 'wss:' : 'ws:';
@@ -297,7 +303,7 @@ export class TemplateManager {
                                     console.error(`${serverUrl} does not have polling support, trying again with websocket in 30s...`);
                                     setTimeout(() => { this.setupNotifications(serverUrl, isTopLevelTemplate) }, 30000);
                                     clearInterval(timer);
-                                    return false;               
+                                    return false;
                                 }
 
                                 if (response.status !== 200) {
@@ -366,7 +372,7 @@ export class TemplateManager {
                         }, 1000 * 1);
                     });
                 }
-                
+
             },
             onerror: (error) => {
                 console.error(`Couldn\'t get topics from ${serverUrl}: ${error}`);
